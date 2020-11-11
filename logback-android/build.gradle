@@ -74,7 +74,7 @@ dependencies {
     compileOnly "org.slf4j:slf4j-api:${slf4jVersion}"
 
     // To support simple expresion evaluation.
-    implementation 'io.apisense:rhino-android:1.1.1'
+    compileOnly 'io.apisense:rhino-android:1.1.1'
 
 
     // For SMTPAppender
