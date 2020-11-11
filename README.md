@@ -23,6 +23,7 @@ Runs on Android 2.3 (SDK 9) or higher. See [Wiki][4] for documentation.
 Quick Start
 -----------
 1. Create a new "Basic Activity" app in [Android Studio][3].
+
 2. In `app/build.gradle`, add the following dependencies:
 
     ```groovy
@@ -70,8 +71,69 @@ Quick Start
     ```
 
 6. Build and start the app.
+
 7. Open logcat for your device (via the _Android Monitor_ tab in Android Studio).
+
 8. Click the app menu, and select the menu-option. You should see "hello world" in logcat.
+
+9. To use conditional statements, create `logback.xml` like below:
+
+    ```xml
+    <configuration>
+        <property name="ANDROID_DIR" value="${DATA_DIR}/logs"/>
+        <property name="PC_DIR" value="${user.home}/${project.name}/logs"/>
+    
+        <if condition='"${log.debug}" === "false" || "${log.debug}" === "log.debug_IS_UNDEFINED"'>
+            <then>
+                <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+            </then>
+        </if>
+    
+        <if condition='"${log.platform}" === "ANDROID"'>
+            <then>
+                <appender name="console" class="ch.qos.logback.classic.android.LogcatAppender">
+                    <tagEncoder>
+                        <pattern>%logger{12}</pattern>
+                    </tagEncoder>
+                    <encoder>
+                        <pattern>[%thread] %msg</pattern>
+                    </encoder>
+                </appender>
+            </then>
+            <else>
+                <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+                    <tagEncoder>
+                        <pattern>%logger{12}</pattern>
+                    </tagEncoder>
+                    <encoder>
+                        <pattern>[%date{yyyy-M-d HH:mm:ss.SSS}] [%level] [%thread] %msg%n</pattern>
+                    </encoder>
+                </appender>
+            </else>
+        </if>
+    
+        <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${${log.platform}_DIR}/trace.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>trace-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>50MB</maxFileSize>
+                <maxHistory>7</maxHistory>
+                <totalSizeCap>350MB</totalSizeCap>
+            </rollingPolicy>
+            <tagEncoder>
+                <pattern>%logger{12}</pattern>
+            </tagEncoder>
+            <encoder>
+                <pattern>[%date{yyyy-M-d HH:mm:ss.SSS}] [%level] [%thread] %msg%n</pattern>
+            </encoder>
+        </appender>
+    
+        <root level="INFO">
+            <appender-ref ref="console"/>
+            <appender-ref ref="file"/>
+        </root>
+    </configuration>
+    ```
 
 
 Download
@@ -80,8 +142,9 @@ _Gradle_ **release**
 
 ```groovy
 dependencies {
-  compile 'org.slf4j:slf4j-api:1.7.25'
-  compile 'com.github.tony19:logback-android:2.0.0'
+  implementation 'org.slf4j:slf4j-api:1.7.25'
+  implementation 'com.github.tony19:logback-android:2.0.0'
+  implementation 'io.apisense:rhino-android:1.1.1'
 }
 ```
 
@@ -93,8 +156,9 @@ repositories {
 }
 
 dependencies {
-  compile 'org.slf4j:slf4j-api:1.7.25'
-  compile 'com.github.tony19:logback-android:2.0.1-SNAPSHOT'
+  implementation 'org.slf4j:slf4j-api:1.7.25'
+  implementation 'com.github.tony19:logback-android:2.0.1-SNAPSHOT'
+  implementation 'io.apisense:rhino-android:1.1.1'
 }
 ```
 
@@ -108,7 +172,7 @@ Use these commands to create the AAR:
 
 The file is output to: `./build/logback-android-2.0.0-debug.aar`
 
- [1]: http://logback.qos.ch
- [2]: http://tony19.github.com/logback-android
- [3]: http://developer.android.com/sdk/index.html
- [4]: https://github.com/tony19/logback-android/wiki
+[1]: http://logback.qos.ch
+[2]: http://tony19.github.com/logback-android
+[3]: http://developer.android.com/sdk/index.html
+[4]: https://github.com/tony19/logback-android/wiki
