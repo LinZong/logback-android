@@ -25,6 +25,9 @@ import ch.qos.logback.core.joran.JoranConfiguratorBase;
 import ch.qos.logback.core.joran.action.AppenderRefAction;
 import ch.qos.logback.core.joran.action.IncludeAction;
 import ch.qos.logback.core.joran.action.NOPAction;
+import ch.qos.logback.core.joran.conditional.ElseAction;
+import ch.qos.logback.core.joran.conditional.IfAction;
+import ch.qos.logback.core.joran.conditional.ThenAction;
 import ch.qos.logback.core.joran.spi.DefaultNestedComponentRegistry;
 import ch.qos.logback.core.joran.spi.ElementSelector;
 import ch.qos.logback.core.joran.spi.RuleStore;
@@ -69,6 +72,14 @@ public class JoranConfigurator extends JoranConfiguratorBase<ILoggingEvent> {
 
     rs.addRule(new ElementSelector("configuration/receiver"),
         new ReceiverAction());
+
+    // add if-then-else support
+    rs.addRule(new ElementSelector("*/if"), new IfAction());
+    rs.addRule(new ElementSelector("*/if/then"), new ThenAction());
+    rs.addRule(new ElementSelector("*/if/then/*"), new NOPAction());
+    rs.addRule(new ElementSelector("*/if/else"), new ElseAction());
+    rs.addRule(new ElementSelector("*/if/else/*"), new NOPAction());
+
   }
 
   @Override
