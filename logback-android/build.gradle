@@ -1,4 +1,10 @@
+plugins {
+    id 'net.researchgate.release' version '2.6.0'
+}
 apply plugin: 'com.android.library'
+apply from: "${rootProject.projectDir}/gradle/analysis.gradle"
+apply from: "${rootProject.projectDir}/gradle/docs.gradle"
+apply from: "${rootProject.projectDir}/gradle/deploy.gradle"
 
 android {
     compileSdkVersion 29
@@ -11,6 +17,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 29
+        versionCode VERSION_CODE.toInteger()
+        versionName VERSION_NAME
     }
     buildTypes {
         release {
@@ -39,7 +47,6 @@ android {
 
 dependencies {
 
-
     testImplementation('junit:junit:4.12') {
         exclude(module: 'hamcrest-core')
     }
@@ -56,15 +63,16 @@ dependencies {
     testImplementation 'com.icegreen:greenmail:1.5.9'
     testImplementation 'dom4j:dom4j:1.6.1'
     testImplementation 'org.easytesting:fest-assert:1.4'
-    testImplementation "org.slf4j:integration:1.7.25"
-    testImplementation "org.slf4j:log4j-over-slf4j:1.7.25"
-    testImplementation "org.slf4j:slf4j-api:1.7.25:tests"
-    testImplementation "org.slf4j:slf4j-ext:1.7.25"
+    testImplementation "org.slf4j:integration:${slf4jVersion}"
+    testImplementation "org.slf4j:log4j-over-slf4j:${slf4jVersion}"
+    testImplementation "org.slf4j:slf4j-api:${slf4jVersion}:tests"
+    testImplementation "org.slf4j:slf4j-ext:${slf4jVersion}"
     testImplementation(group: 'org.subethamail', name: 'subethasmtp', version: '3.1.7') {
         exclude(module: 'slf4j-api')
     }
 
-    compileOnly "org.slf4j:slf4j-api:1.7.25"
+    compileOnly "org.slf4j:slf4j-api:${slf4jVersion}"
+
     // To support simple expresion evaluation.
     implementation 'io.apisense:rhino-android:1.1.1'
 
@@ -75,4 +83,41 @@ dependencies {
 
     testImplementation 'ch.qos.cal10n:cal10n-api:0.8.1'
     testAnnotationProcessor 'ch.qos.cal10n:cal10n-api:0.8.1'
+}
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        // Warn about deprecations
+        //options.compilerArgs << '-Xlint:deprecation'
+        // Warn about unchecked usages
+        options.compilerArgs << '-Xlint:unchecked'
+        // Don't warn about using source/target 1.5 option
+        options.compilerArgs << '-Xlint:-options'
+
+        options.debug(['debugLevel': 'source,lines,vars'])
+        options.debug = VERSION_NAME.contains('SNAPSHOT')
+    }
+
+    tasks.withType(AbstractArchiveTask) {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+}
+
+release {
+    tagTemplate = 'v_${version}'
+    preTagCommitMessage = ':cloud: Release'
+    tagCommitMessage = ':cloud: Release'
+    newVersionCommitMessage = ':cloud: Bump'
+
+    versionPropertyFile = '../gradle.properties'
+    versionProperties = ['VERSION_NAME']
+
+    git {
+        requireBranch = ''
+    }
+}
+
+nexusStaging {
+    packageGroup = 'com.github.tony19'
 }
