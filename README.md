@@ -162,17 +162,39 @@ dependencies {
 }
 ```
 
-Build
------
-Use these commands to create the AAR:
-
-    git clone git://github.com/tony19/logback-android.git
-    cd logback-android
-    scripts/makejar.sh
-
-The file is output to: `./build/logback-android-2.0.0-debug.aar`
-
 [1]: http://logback.qos.ch
 [2]: http://tony19.github.com/logback-android
 [3]: http://developer.android.com/sdk/index.html
 [4]: https://github.com/tony19/logback-android/wiki
+
+Practice: Include the latest local build to your Android project.
+-----
+
+1. Use these commands to create the AAR:
+
+```shell
+    git clone git://github.com/tony19/logback-android.git
+    cd logback-android
+    scripts/makejar.sh
+```
+​	Then the file is output to: `./build/logback-android-2.0.0-debug.aar`
+
+2. Copy `./build/logback-android-2.0.0-debug.aar` to the `libs` folder under your Android project.
+
+3. Ensure that the `build.gradle` of Android contains `*.aar` type like: `implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])`.
+
+4. Add two dependencies:
+
+   ```groovy
+   dependencies {
+       // ...
+       implementation 'org.slf4j:slf4j-api:1.7.25'
+       implementation 'io.apisense:rhino-android:1.1.1'
+       // ...
+   }
+   ```
+
+5. Add `logback.xml` to `src/main/assets`.
+
+6. That is it. Enjoy!
+
