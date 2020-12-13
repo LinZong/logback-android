@@ -196,6 +196,11 @@ public class CoreConstants {
    */
   public static final String VERSION_CODE_KEY = "VERSION_CODE";
 
+  /**
+   * The key under which dirs the log viewer library is used to search for log files.
+   */
+  public static final String LOGVIEWER_SEARCH_DIR_KEY = "LOGVIEWER_SEARCH_DIR";
+
   public static final int BYTES_PER_INT = 4;
   public static final long MILLIS_IN_ONE_SECOND = 1000;
   public static final long MILLIS_IN_ONE_MINUTE = MILLIS_IN_ONE_SECOND*60;

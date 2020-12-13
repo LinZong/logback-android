@@ -22,10 +22,7 @@ import java.nio.channels.FileLock;
 import java.util.Map;
 
 import ch.qos.logback.core.recovery.ResilientFileOutputStream;
-import ch.qos.logback.core.util.ContextUtil;
-import ch.qos.logback.core.util.EnvUtil;
-import ch.qos.logback.core.util.FileSize;
-import ch.qos.logback.core.util.FileUtil;
+import ch.qos.logback.core.util.*;
 
 /**
  * FileAppender appends log events to a file.
@@ -351,7 +348,7 @@ public class FileAppender<E> extends OutputStreamAppender<E> {
    * @param filename filename to evaluate
    * @return absolute path to the filename
    */
-  private String getAbsoluteFilePath(String filename) {
+  public String getAbsoluteFilePath(String filename) {
     // In Android, relative paths created with File() are relative
     // to root, so fix it by prefixing the path to the app's "files"
     // directory.
