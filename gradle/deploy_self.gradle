@@ -17,6 +17,35 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.jfrog.bintray'
 
+bintray {
+    user = rootProject.hasProperty('BINTRAY_USER') ? BINTRAY_USER : ''
+    key = rootProject.hasProperty('BINTRAY_KEY') ? BINTRAY_KEY : ''
+    configurations = ['archives']
+
+    publish = true
+    override = true
+
+    pkg {
+        repo = 'generic'
+        name = "${GROUP}:${POM_NAME}"
+        desc = POM_DESCRIPTION
+        licenses = [POM_LICENCE_ID]
+        labels = ['android', 'logging']
+        websiteUrl = POM_URL
+        issueTrackerUrl = POM_SCM_ISSUES_URL
+        vcsUrl = POM_SCM_URL
+        githubRepo = POM_SCM_URL
+
+        version {
+            name = VERSION_NAME
+            released  = new Date()
+            vcsTag = "v_${VERSION_NAME}"
+            gpg {
+                sign = true
+            }
+        }
+    }
+}
 
 def isReleaseBuild() {
     return !VERSION_NAME.contains("SNAPSHOT")
@@ -51,16 +80,10 @@ afterEvaluate { project ->
                 pom.version = VERSION_NAME
 
                 repository(url: getReleaseRepositoryUrl()) {
-                    def username = getRepositoryUsername()
-                    def passwd = getRepositoryPassword()
-                    println("使用 UserName: ${username}, Password: ${passwd} 鉴权!")
-                    authentication(userName: username, password: passwd)
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
                 snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                    def username = getRepositoryUsername()
-                    def passwd = getRepositoryPassword()
-                    println("使用 UserName: ${username}, Password: ${passwd} 鉴权!")
-                    authentication(userName: username, password: passwd)
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
                 pom.project {
@@ -82,6 +105,7 @@ afterEvaluate { project ->
                            distribution POM_LICENCE_DIST
                        }
                     }
+
                     developers {
                         developer {
                             id POM_DEVELOPER_ID
